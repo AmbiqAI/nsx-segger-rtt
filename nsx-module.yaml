@@ -1,0 +1,49 @@
+schema_version: 1
+module:
+  name: nsx-segger-rtt
+  type: runtime
+  version: 0.1.0
+support:
+  ambiqsuite: true
+  zephyr: false
+summary: >-
+  SEGGER RTT V8.58.0 target sources, unmodified, as an NSX runtime module.
+capabilities:
+  - rtt
+  - debug_output
+  - host_transport
+use_cases:
+  - host logging over the debug probe
+  - profiler and trace upload
+agent_keywords:
+  - rtt
+  - segger
+  - j-link
+build:
+  cmake:
+    package: nsx_segger_rtt
+    targets:
+      - nsx::segger_rtt
+depends:
+  required:
+    - nsx-cmsis-core
+    - nsx-core
+  optional: []
+compatibility:
+  boards:
+    - '*'
+  socs:
+    - apollo3
+    - apollo3p
+    - apollo4l
+    - apollo4p
+    - apollo5b
+    - apollo330P
+    - apollo510
+    - apollo510b
+    - apollo510L
+    - atomiq110
+  toolchains:
+    - arm-none-eabi-gcc
+    - armclang
+    - atfe
