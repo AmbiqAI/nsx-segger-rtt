@@ -38,13 +38,14 @@ target_link_libraries(your_target PRIVATE nsx::segger_rtt)
 
 SEGGER sizes channel 0 at compile time and ignores the buffer passed to
 `SEGGER_RTT_ConfigUpBuffer(0, ...)` / `SEGGER_RTT_ConfigDownBuffer(0, ...)`.
-Size channel 0 through the CMake cache variables; they become `PUBLIC`
-compile definitions on the target.
+Size channel 0 through the CMake cache variables. They reach only the
+module's own compile of `SEGGER_RTT.c`; an app's own `BUFFER_SIZE_UP` define
+has no effect on the channel-0 buffer.
 
-| Cache variable                    | Default | Defines           |
-| --------------------------------- | ------- | ----------------- |
-| `NSX_SEGGER_RTT_BUFFER_SIZE_UP`   | 1024    | `BUFFER_SIZE_UP`  |
-| `NSX_SEGGER_RTT_BUFFER_SIZE_DOWN` | 16      | `BUFFER_SIZE_DOWN`|
+| Cache variable                    | Default |
+| --------------------------------- | ------- |
+| `NSX_SEGGER_RTT_BUFFER_SIZE_UP`   | 1024    |
+| `NSX_SEGGER_RTT_BUFFER_SIZE_DOWN` | 16      |
 
 Channels 1 and above take caller-provided storage as usual.
 

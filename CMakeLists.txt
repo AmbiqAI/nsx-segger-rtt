@@ -1,3 +1,5 @@
+include(GNUInstallDirs)
+
 if(NOT TARGET nsx::core)
     message(FATAL_ERROR "nsx::core must be defined before nsx-segger-rtt is added.")
 endif()
@@ -18,10 +20,11 @@ target_link_libraries(nsx_segger_rtt PUBLIC
 )
 
 # The ARMv7-M assembly file is not shipped.
-target_compile_definitions(nsx_segger_rtt PUBLIC
-    RTT_USE_ASM=0
-    BUFFER_SIZE_UP=${NSX_SEGGER_RTT_BUFFER_SIZE_UP}
-    BUFFER_SIZE_DOWN=${NSX_SEGGER_RTT_BUFFER_SIZE_DOWN}
+target_compile_definitions(nsx_segger_rtt
+    PUBLIC RTT_USE_ASM=0
+    PRIVATE
+        BUFFER_SIZE_UP=${NSX_SEGGER_RTT_BUFFER_SIZE_UP}
+        BUFFER_SIZE_DOWN=${NSX_SEGGER_RTT_BUFFER_SIZE_DOWN}
 )
 
 target_include_directories(nsx_segger_rtt PUBLIC
