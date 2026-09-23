@@ -17,7 +17,9 @@ target_link_libraries(nsx_segger_rtt PUBLIC
     nsx::core
 )
 
+# The ARMv7-M assembly file is not shipped.
 target_compile_definitions(nsx_segger_rtt PUBLIC
+    RTT_USE_ASM=0
     BUFFER_SIZE_UP=${NSX_SEGGER_RTT_BUFFER_SIZE_UP}
     BUFFER_SIZE_DOWN=${NSX_SEGGER_RTT_BUFFER_SIZE_DOWN}
 )

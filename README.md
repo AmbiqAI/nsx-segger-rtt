@@ -1,13 +1,16 @@
 # nsx-segger-rtt
 
-SEGGER RTT V8.58.0 as an NSX runtime module. `RTT/` and `Config/` are the
-upstream files, unmodified (`SOURCE.md` records tag, commit, and checksums);
-`CMakeLists.txt` wraps them as the `nsx::segger_rtt` target.
+SEGGER RTT V8.58.0 as an NSX runtime module. `RTT/` and `Config/` hold a
+byte-identical subset of the upstream tree (`SOURCE.md` records tag, commit,
+and checksums); `CMakeLists.txt` wraps them as the `nsx::segger_rtt` target.
+Not shipped: `SEGGER_RTT_printf.c` and the ARMv7-M assembly fast path, so
+`SEGGER_RTT_printf` is unavailable and the target builds with `RTT_USE_ASM=0`.
 
 ## Use it before it reaches the registry
 
-Declare the module in the app's `nsx.yml` and point its project at this repo
-by tag, then run `nsx lock` and `nsx sync`:
+Declare the module in the app's `nsx.yml` and point its project at this repo,
+then run `nsx lock` and `nsx sync` (`nsx module register` writes the same
+block). Pin `revision` to a release tag such as `v0.1.0` once one exists:
 
 ```yaml
 modules:
@@ -17,11 +20,11 @@ module_registry:
   projects:
     nsx-segger-rtt:
       url: https://github.com/AmbiqAI/nsx-segger-rtt.git
-      revision: v0.1.0
+      revision: main
   modules:
     nsx-segger-rtt:
       project: nsx-segger-rtt
-      revision: v0.1.0
+      revision: main
       metadata: nsx-module.yaml
 ```
 
@@ -51,4 +54,4 @@ the next PR.
 ## Dependencies
 
 - `nsx-cmsis-core` — CMSIS core headers.
-- `nsx-core` — memory placement macros (used by the next PR).
+- `nsx-core` — `NSX_MEM_*` placement macros.

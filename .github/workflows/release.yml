@@ -20,6 +20,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check vendored SEGGER checksums
+        run: grep -E '^[0-9a-f]{64}  ' SOURCE.md | sha256sum -c
+
+      - name: Install arm-none-eabi-gcc
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi
+
+      - name: Build CMake smoke test
+        run: |
+          cmake -S tests/cmake-smoke -B build/cmake-smoke
+          cmake --build build/cmake-smoke --parallel
+
       - name: Run Release Please
         id: release
         uses: googleapis/release-please-action@v4

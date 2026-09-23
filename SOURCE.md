@@ -3,7 +3,8 @@
 - Upstream: https://github.com/SEGGERMicro/RTT
 - Tag: `V8.58.0`
 - Commit: `4d8feab3150f86f37a9d323ddc88d6cdf5673072`
-- Files are copied unchanged; `LICENSE.md` is upstream's license.
+- A subset of upstream `RTT/` and `Config/`, copied unchanged.
+- `LICENSE.md` is the upstream license.
 
 Verify with `grep -E '^[0-9a-f]{64}  ' SOURCE.md | sha256sum -c`:
 
