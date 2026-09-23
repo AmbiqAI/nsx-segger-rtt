@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metadata:
+    name: Validate metadata and vendored sources
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check release version consistency
+        run: |
+          manifest=$(jq -r '."."' .release-please-manifest.json)
+          module=$(sed -n 's/^  version: //p' nsx-module.yaml)
+          test "$manifest" = "$module" || { echo "manifest $manifest != module $module"; exit 1; }
+
+      - name: Check vendored SEGGER checksums
+        run: grep -E '^[0-9a-f]{64}  ' SOURCE.md | sha256sum -c
+
+  cmake-smoke:
+    name: Cross-compile and link CMake target
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install arm-none-eabi-gcc
+        run: sudo apt-get install -y gcc-arm-none-eabi
+
+      - name: Configure
+        run: cmake -S tests/cmake-smoke -B build/cmake-smoke
+
+      - name: Build and link
+        run: cmake --build build/cmake-smoke --parallel
