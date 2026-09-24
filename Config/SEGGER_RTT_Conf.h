@@ -1,32 +1,25 @@
-/*********************************************************************
-*                   (c) SEGGER Microcontroller GmbH                  *
-*                        The Embedded Experts                        *
-*                           www.segger.com                           *
-**********************************************************************
-*                                                                    *
-*        SEGGER RTT * Real Time Transfer for embedded targets        *
-*                  https://github.com/SEGGERMicro/RTT                *
-*                                                                    *
-**********************************************************************
+/*
+ * NSX RTT placement policy; see README.
+ *
+ * Copyright (c) 2026, Ambiq. BSD 3-Clause, see LICENSE.
+ */
 
----------------------------END-OF-HEADER------------------------------
-Purpose : User configuration file for RTT.
-          For available configuration,
-          refer to SEGGER_RTT_ConfDefaults.h.
+#ifndef NSX_SEGGER_RTT_CONF_H
+#define NSX_SEGGER_RTT_CONF_H
 
-----------------------------------------------------------------------
-*/
+#include "nsx_mem.h"
 
-#ifndef SEGGER_RTT_CONF_H
-#define SEGGER_RTT_CONF_H
+#ifndef NSX_CACHE_HAS_EXPLICIT_DCACHE
+#error "nsx-core too old: NSX_CACHE_HAS_EXPLICIT_DCACHE missing"
+#endif
 
+/* Cached SRAM: keep default TCM .bss. */
+#if !NSX_CACHE_HAS_EXPLICIT_DCACHE && NSX_MEM__HAS_SRAM_BSS
+#ifndef SEGGER_RTT_SECTION
+#define SEGGER_RTT_SECTION NSX_MEM__SEC_SRAM_BSS
+#endif
+#endif
 
-/*********************************************************************
-*
-*       Defines, configurable
-*
-**********************************************************************
-*/
+#include "upstream/SEGGER_RTT_Conf.h"
 
 #endif
-/*************************** End of file ****************************/
