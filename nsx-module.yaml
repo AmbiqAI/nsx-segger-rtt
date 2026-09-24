@@ -2,12 +2,11 @@ schema_version: 1
 module:
   name: nsx-segger-rtt
   type: runtime
-  version: 0.1.0
+  version: 0.1.1
 support:
   ambiqsuite: true
   zephyr: false
-summary: >-
-  SEGGER RTT V8.58.0 target sources, unmodified, as an NSX runtime module.
+summary: SEGGER RTT V8.58.0 target sources, unmodified, as an NSX runtime module.
 capabilities:
   - rtt
   - debug_output
