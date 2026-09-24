@@ -1,8 +1,9 @@
 # nsx-segger-rtt
 
-SEGGER RTT V8.58.0 as an NSX runtime module. `RTT/` and `Config/` hold a
-byte-identical subset of the upstream tree (`SOURCE.md` records tag, commit,
-and checksums); `CMakeLists.txt` wraps them as the `nsx::segger_rtt` target.
+SEGGER RTT V8.58.0 as an NSX runtime module. `RTT/` and `Config/upstream/`
+hold a byte-identical subset of the upstream tree (`SOURCE.md` records tag,
+commit, and checksums); `Config/SEGGER_RTT_Conf.h` is module-owned and
+`CMakeLists.txt` wraps them as the `nsx::segger_rtt` target.
 Not shipped: `SEGGER_RTT_printf.c` and the ARMv7-M assembly fast path, so
 `SEGGER_RTT_printf` is unavailable and the target builds with `RTT_USE_ASM=0`.
 
@@ -49,10 +50,28 @@ has no effect on the channel-0 buffer.
 
 Channels 1 and above take caller-provided storage as usual.
 
-Per-SoC buffer placement (`NSX_MEM_*` sections from `nsx-core`) arrives in
-the next PR.
+## Buffer placement
+
+`Config/SEGGER_RTT_Conf.h` picks where the control block and channel-0
+buffers live, then includes the upstream configuration file. It reads two
+`nsx_mem.h` flags from `nsx-core`:
+
+- `NSX_CACHE_HAS_EXPLICIT_DCACHE` set (the Cortex-M55 Apollo5 / Apollo510 /
+  Apollo330P parts): `SEGGER_RTT_SECTION` stays undefined, so everything
+  lands in non-cached TCM `.bss`. Shared SRAM is cached on these parts and
+  RTT runs with `SEGGER_RTT_CPU_CACHE_LINE_SIZE` 0, so J-Link's background
+  SWD reads would see stale ring data there.
+- Otherwise, `NSX_MEM__HAS_SRAM_BSS` set (the cacheless Cortex-M4 Apollo4):
+  `SEGGER_RTT_SECTION` becomes `NSX_MEM__SEC_SRAM_BSS`, keeping the buffers
+  out of scarce TCM. SEGGER derives `SEGGER_RTT_BUFFER_SECTION` from it.
+- Everything else (Apollo3, unknown parts): undefined, default `.bss`.
+
+New parts inherit the policy from their `nsx_mem.h` entry. `tests/cmake-smoke`
+compiles all three cases against a stub `nsx_mem.h` and checks the section
+each RTT symbol lands in.
 
 ## Dependencies
 
 - `nsx-cmsis-core` — CMSIS core headers.
-- `nsx-core` — `NSX_MEM_*` placement macros.
+- `nsx-core` — `nsx_mem.h`, which `Config/SEGGER_RTT_Conf.h` includes for
+  the `NSX_MEM__*` placement macros.

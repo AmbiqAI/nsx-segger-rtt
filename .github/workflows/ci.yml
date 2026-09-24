@@ -26,8 +26,11 @@ jobs:
         run: grep -E '^[0-9a-f]{64}  ' SOURCE.md | sha256sum -c
 
   cmake-smoke:
-    name: Cross-compile and link CMake target
+    name: Cross-compile, link, check placement (${{ matrix.case }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        case: [sram_bss, tcm, m55]
     steps:
       - uses: actions/checkout@v4
 
@@ -35,7 +38,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi
 
       - name: Configure
-        run: cmake -S tests/cmake-smoke -B build/cmake-smoke
+        run: cmake -S tests/cmake-smoke -B build/cmake-smoke -DNSX_SMOKE_CASE=${{ matrix.case }}
 
       - name: Build and link
         run: cmake --build build/cmake-smoke --parallel
+
+      - name: Check RTT section placement
+        run: ctest --test-dir build/cmake-smoke --output-on-failure
