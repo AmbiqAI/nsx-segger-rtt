@@ -2,7 +2,7 @@ schema_version: 1
 module:
   name: nsx-segger-rtt
   type: runtime
-  version: 0.1.1
+  version: 0.1.2
 support:
   ambiqsuite: true
   zephyr: false
