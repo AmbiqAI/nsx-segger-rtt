@@ -67,8 +67,15 @@ buffers live, then includes the upstream configuration file. It reads two
 - Everything else (Apollo3, unknown parts): undefined, default `.bss`.
 
 New parts inherit the policy from their `nsx_mem.h` entry. `tests/cmake-smoke`
-compiles all three cases against a stub `nsx_mem.h` and checks the section
-each RTT symbol lands in.
+compiles the placement cases against a stub `nsx_mem.h`, using Cortex-M4
+and Cortex-M55 compiler targets. It checks RTT symbol sections and channel-0
+buffer sizes, including 12 KiB and 32 KiB up buffers. It also links a consumer
+against a staged install to verify the archive and nested configuration headers.
+The build-tree consumer checks that `RTT_USE_ASM=0` propagates from the target.
+These are compile/link checks; real board memory maps and live RTT transport
+remain consumer integration checks. The install test supplies dependency headers
+and compiler definitions explicitly; this module does not export a standalone
+`find_package` configuration.
 
 ## Dependencies
 

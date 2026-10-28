@@ -26,11 +26,15 @@ jobs:
         run: grep -E '^[0-9a-f]{64}  ' SOURCE.md | sha256sum -c
 
   cmake-smoke:
-    name: Cross-compile, link, check placement (${{ matrix.case }})
+    name: Cross-compile, link, check placement (${{ matrix.case }}, ${{ matrix.cpu }}, ${{ matrix.up }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        case: [sram_bss, tcm, m55]
+        include:
+          - {case: sram_bss, cpu: cortex-m4, up: 1024, down: 16}
+          - {case: tcm, cpu: cortex-m4, up: 32768, down: 32}
+          - {case: m55, cpu: cortex-m55, up: 12288, down: 16}
+          - {case: m55, cpu: cortex-m55, up: 32768, down: 32}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,10 +42,15 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi
 
       - name: Configure
-        run: cmake -S tests/cmake-smoke -B build/cmake-smoke -DNSX_SMOKE_CASE=${{ matrix.case }}
+        run: >-
+          cmake -S tests/cmake-smoke -B build/cmake-smoke
+          -DNSX_SMOKE_CASE=${{ matrix.case }}
+          -DNSX_SMOKE_CPU=${{ matrix.cpu }}
+          -DNSX_SEGGER_RTT_BUFFER_SIZE_UP=${{ matrix.up }}
+          -DNSX_SEGGER_RTT_BUFFER_SIZE_DOWN=${{ matrix.down }}
 
       - name: Build and link
         run: cmake --build build/cmake-smoke --parallel
 
-      - name: Check RTT section placement
+      - name: Check RTT placement, buffer sizes and installed consumer
         run: ctest --test-dir build/cmake-smoke --output-on-failure

@@ -30,6 +30,7 @@ jobs:
         run: |
           cmake -S tests/cmake-smoke -B build/cmake-smoke
           cmake --build build/cmake-smoke --parallel
+          ctest --test-dir build/cmake-smoke --output-on-failure
 
       - name: Run Release Please
         id: release
