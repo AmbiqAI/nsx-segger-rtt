@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/AmbiqAI/nsx-segger-rtt/compare/v0.1.2...v0.1.3) (2026-10-28)
+
+
+### Tests
+
+* verify RTT consumer contracts on Cortex-M4 and M55 ([#6](https://github.com/AmbiqAI/nsx-segger-rtt/issues/6)) ([63f0c25](https://github.com/AmbiqAI/nsx-segger-rtt/commit/63f0c25d2ba6edfecdc93374e0e21b031f557c54))
+
 ## [0.1.2](https://github.com/AmbiqAI/nsx-segger-rtt/compare/v0.1.1...v0.1.2) (2026-09-24)
 
 
