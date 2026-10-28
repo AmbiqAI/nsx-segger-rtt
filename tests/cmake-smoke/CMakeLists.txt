@@ -9,8 +9,9 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 project(nsx_segger_rtt_smoke C)
 include(GNUInstallDirs)
 
-set(NSX_SMOKE_ARCH -mthumb -mcpu=cortex-m4)
-add_compile_options(${NSX_SMOKE_ARCH} -Wall)
+set(NSX_SMOKE_CPU cortex-m4 CACHE STRING "Compiler target CPU")
+set(NSX_SMOKE_ARCH -mthumb -mcpu=${NSX_SMOKE_CPU})
+add_compile_options(${NSX_SMOKE_ARCH} -Wall -Werror)
 add_link_options(${NSX_SMOKE_ARCH} --specs=nosys.specs)
 
 add_library(nsx_cmsis_core INTERFACE)
@@ -41,4 +42,9 @@ target_link_libraries(cmake_link_smoke PRIVATE nsx::segger_rtt)
 
 enable_testing()
 add_test(NAME rtt_section
-    COMMAND ${CMAKE_CURRENT_LIST_DIR}/check-section.sh $<TARGET_FILE:cmake_link_smoke> ${NSX_SMOKE_WANT})
+    COMMAND ${CMAKE_CURRENT_LIST_DIR}/check-section.sh $<TARGET_FILE:cmake_link_smoke> ${NSX_SMOKE_WANT}
+        ${NSX_SEGGER_RTT_BUFFER_SIZE_UP} ${NSX_SEGGER_RTT_BUFFER_SIZE_DOWN})
+
+configure_file(installed-consumer.cmake.in installed-consumer.cmake @ONLY)
+add_test(NAME installed_consumer
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/installed-consumer.cmake)

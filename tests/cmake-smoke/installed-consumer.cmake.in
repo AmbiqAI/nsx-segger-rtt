@@ -1,0 +1,23 @@
+set(prefix "@CMAKE_CURRENT_BINARY_DIR@/installed")
+file(REMOVE_RECURSE "${prefix}")
+execute_process(
+    COMMAND "@CMAKE_COMMAND@" --install "@CMAKE_CURRENT_BINARY_DIR@" --prefix "${prefix}"
+    RESULT_VARIABLE result)
+if(NOT result EQUAL 0)
+    message(FATAL_ERROR "Staged install failed: ${result}")
+endif()
+
+# No package config is exported: consumers supply NSX dependencies and flags.
+set(module "${prefix}/@CMAKE_INSTALL_INCLUDEDIR@/nsx/modules/nsx-segger-rtt")
+execute_process(
+    COMMAND "@CMAKE_C_COMPILER@" @NSX_SMOKE_ARCH@ -Wall -Werror
+        -DRTT_USE_ASM=0
+        "-I${module}/RTT" "-I${module}/Config"
+        "-I@CMAKE_CURRENT_SOURCE_DIR@/stub"
+        "@CMAKE_CURRENT_SOURCE_DIR@/main.c"
+        "${prefix}/@CMAKE_INSTALL_LIBDIR@/libnsx_segger_rtt.a"
+        --specs=nosys.specs -o "${prefix}/consumer.elf"
+    RESULT_VARIABLE result)
+if(NOT result EQUAL 0)
+    message(FATAL_ERROR "Installed consumer did not compile/link: ${result}")
+endif()
